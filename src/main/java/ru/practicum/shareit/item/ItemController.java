@@ -17,17 +17,18 @@ import java.util.Collection;
 @RequestMapping("/items")
 public class ItemController {
     private final ItemService service;
+    private static final String headerUserId = "X-Sharer-User-Id";
 
     @PostMapping
     public ItemDto create(@RequestBody Item item,
-                          @RequestHeader("X-Sharer-User-Id") Long userId) {
+                          @RequestHeader(headerUserId) Long userId) {
         log.info("Create Item");
         return service.create(userId, item);
     }
 
     @PatchMapping("/{id}")
     public ItemDto update(@PathVariable Long id, @RequestBody Item item,
-                          @RequestHeader("X-Sharer-User-Id") Long userId) {
+                          @RequestHeader(headerUserId) Long userId) {
         log.info("Update Item {}", id);
         return service.update(userId, id, item);
     }
@@ -45,7 +46,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public Collection<ItemDto> getAll(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public Collection<ItemDto> getAll(@RequestHeader(headerUserId) Long userId) {
         log.info("Get Items");
         return service.getAll(userId);
     }

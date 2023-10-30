@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exeptions.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserStorage;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,15 +19,12 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor
 public class ItemStorageImpl implements ItemStorage {
 
-    private final UserStorage userStorage;
-
     Long counter = 1L;
     private Map<Long, Item> storage = new HashMap<>();
     private final ItemMapper mapper;
 
     @Override
     public ItemDto create(Long userId, Item item) {
-        userStorage.checkContainsUser(userId);
         item.setId(counter);
         item.setOwner(userId);
         storage.put(item.getId(), item);

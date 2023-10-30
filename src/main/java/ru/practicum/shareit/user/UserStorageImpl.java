@@ -1,7 +1,7 @@
 package ru.practicum.shareit.user;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exeptions.ConflictDataException;
 import ru.practicum.shareit.exeptions.NotFoundException;
@@ -17,17 +17,13 @@ import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Repository
+@RequiredArgsConstructor
 public class UserStorageImpl implements UserStorage {
 
     private Long counter = 1L;
     private Map<Long, User> storage = new HashMap<>();
     private final UserMapper mapper;
     private final ItemStorage itemStorage;
-
-    public UserStorageImpl(UserMapper mapper, @Lazy ItemStorage itemStorage) {
-        this.mapper = mapper;
-        this.itemStorage = itemStorage;
-    }
 
     @Override
     public UserDto create(User user) {

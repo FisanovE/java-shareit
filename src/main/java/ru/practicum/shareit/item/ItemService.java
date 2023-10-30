@@ -19,6 +19,7 @@ public class ItemService {
     private final UserStorage userStorage;
 
     public ItemDto create(Long userId, Item item) {
+        userStorage.checkContainsUser(userId);
         validateService.checkItem(item);
         return storage.create(userId, item);
     }

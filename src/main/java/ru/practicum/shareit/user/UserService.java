@@ -13,14 +13,14 @@ public class UserService {
     private final ValidateService validateService;
 
     public UserDto create(User user) {
-        validateService.checkingNameForValid(user);
-        validateService.checkingEmailForValid(user);
+        validateService.checkNameForValid(user);
+        validateService.checkEmailForValid(user);
         return userStorage.create(user);
     }
 
     public UserDto update(Long id, User user) {
-        if (user.getName() != null) validateService.checkingNameForValid(user);
-        if (user.getEmail() != null) validateService.checkingEmailForValid(user);
+        if (user.getName() != null) validateService.checkNameForValid(user);
+        if (user.getEmail() != null) validateService.checkEmailForValid(user);
         return userStorage.update(id, user);
     }
 

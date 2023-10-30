@@ -13,11 +13,11 @@ import java.util.regex.Pattern;
 @Service
 public class ValidateService {
 
-    public void checkingNameForValid(User user) throws ValidationException {
+    public void checkNameForValid(User user) throws ValidationException {
         if (user.getName().isBlank()) throw new ValidationException("Name is empty: \"" + user.getName() + "\"");
     }
 
-    public void checkingEmailForValid(User user) throws ValidationException {
+    public void checkEmailForValid(User user) throws ValidationException {
         if (user.getEmail() == null || user.getEmail().isBlank()) {
             throw new ValidationException("Email is empty: \"" + user.getEmail() + "\"");
         }
