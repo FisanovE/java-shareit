@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class User {
+public class UserDto {
     private Long id;
     private String name;
     private String email;
