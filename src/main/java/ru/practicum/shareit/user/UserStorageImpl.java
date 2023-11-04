@@ -5,12 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exeptions.ConflictDataException;
 import ru.practicum.shareit.exeptions.NotFoundException;
-import ru.practicum.shareit.item.ItemStorage;
-import ru.practicum.shareit.item.dto.ItemDto;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
@@ -19,11 +16,9 @@ import static java.util.stream.Collectors.toList;
 @Repository
 @RequiredArgsConstructor
 public class UserStorageImpl implements UserStorage {
-
     private Long counter = 1L;
     private Map<Long, User> storage = new HashMap<>();
     private final UserMapper mapper;
-    private final ItemStorage itemStorage;
 
     @Override
     public UserDto create(User user) {
@@ -49,10 +44,6 @@ public class UserStorageImpl implements UserStorage {
     public void delete(Long id) {
         checkContainsUser(id);
         storage.remove(id);
-        List<ItemDto> removedItems = (List<ItemDto>) itemStorage.getAll(id);
-        for (ItemDto itemDto : removedItems) {
-            itemStorage.delete(itemDto.getId());
-        }
     }
 
     @Override

@@ -3,13 +3,17 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.ValidateService;
+import ru.practicum.shareit.item.ItemStorage;
+import ru.practicum.shareit.item.dto.ItemDto;
 
 import java.util.Collection;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
+    private final ItemStorage itemStorage;
     private final ValidateService validateService;
 
     public UserDto create(User user) {
@@ -26,6 +30,10 @@ public class UserService {
 
     public void delete(Long id) {
         userStorage.delete(id);
+        List<ItemDto> removedItems = (List<ItemDto>) itemStorage.getAll(id);
+        for (ItemDto itemDto : removedItems) {
+            itemStorage.delete(itemDto.getId());
+        }
     }
 
     public UserDto getById(Long id) {
