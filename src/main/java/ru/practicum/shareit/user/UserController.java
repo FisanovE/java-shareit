@@ -17,15 +17,15 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public UserDto create(@RequestBody User user) {
+    public UserDto create(@RequestBody UserDto userDto) {
         log.info("Create user");
-        return userService.create(user);
+        return userService.create(userDto);
     }
 
     @PatchMapping("/{id}")
-    public UserDto update(@PathVariable Long id, @RequestBody User user) {
-        log.info("Update user {}", user.getId());
-        return userService.update(id, user);
+    public UserDto update(@PathVariable Long id, @RequestBody UserDto userDto) {
+        log.info("Update user {}", id);
+        return userService.update(id, userDto);
     }
 
     @DeleteMapping("/{id}")

@@ -4,15 +4,15 @@ import java.util.Collection;
 
 public interface UserStorage {
 
-    UserDto create(User user);
+    User create(User user);
 
-    UserDto update(Long id, User user);
+    User update(Long id, User user);
 
     void delete(Long id);
 
-    Collection<UserDto> getAll();
+    Collection<User> getAll();
 
-    UserDto getById(Long id);
+    User getById(Long id);
 
     void checkContainsUser(Long id);
 }

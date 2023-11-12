@@ -6,11 +6,10 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exeptions.ConflictDataException;
 import ru.practicum.shareit.exeptions.NotFoundException;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Repository
@@ -21,23 +20,23 @@ public class UserStorageImpl implements UserStorage {
     private final UserMapper mapper;
 
     @Override
-    public UserDto create(User user) {
+    public User create(User user) {
         checkContainsEmail(user.getId(), user.getEmail());
         user.setId(counter);
         storage.put(user.getId(), user);
         counter++;
-        return mapper.toUserDto(user);
+        return user;
     }
 
     @Override
-    public UserDto update(Long id, User user) {
+    public User update(Long id, User user) {
         checkContainsUser(id);
         checkContainsEmail(id, user.getEmail());
         User updatedUser = storage.get(id);
         if (user.getName() != null) updatedUser.setName(user.getName());
         if (user.getEmail() != null) updatedUser.setEmail(user.getEmail());
         storage.put(id, updatedUser);
-        return mapper.toUserDto(updatedUser);
+        return updatedUser;
     }
 
     @Override
@@ -47,16 +46,14 @@ public class UserStorageImpl implements UserStorage {
     }
 
     @Override
-    public Collection<UserDto> getAll() {
-        return storage.values().stream()
-                .map(mapper::toUserDto)
-                .collect(toList());
+    public Collection<User> getAll() {
+        return new ArrayList<>(storage.values());
     }
 
     @Override
-    public UserDto getById(Long id) {
+    public User getById(Long id) {
         checkContainsUser(id);
-        return mapper.toUserDto(storage.get(id));
+        return storage.get(id);
     }
 
     public void checkContainsUser(Long id) {

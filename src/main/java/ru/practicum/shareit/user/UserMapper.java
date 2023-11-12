@@ -13,10 +13,10 @@ public class UserMapper {
     }
 
     public User toUser(UserDto userDTO) {
-        return User.builder()
-                .id(userDTO.getId() != null ? userDTO.getId() : null)
-                .name(userDTO.getName())
-                .email(userDTO.getEmail())
-                .build();
+        User user = new User();
+        user.setId(userDTO.getId() != null ? userDTO.getId() : null);
+        user.setName(userDTO.getName());
+        user.setEmail(userDTO.getEmail());
+        return user;
     }
 }
