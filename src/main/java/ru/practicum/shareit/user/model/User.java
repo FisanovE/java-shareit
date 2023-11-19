@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,5 +22,6 @@ public class User {
 
     @Column(name = "name", nullable = false)
     private String name;
+
     private String email;
 }

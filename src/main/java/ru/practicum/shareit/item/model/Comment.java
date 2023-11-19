@@ -1,15 +1,17 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Builder
 @Entity
+@NoArgsConstructor
 @Table(name = "comments")
 public class Comment {
     @Id
@@ -18,13 +20,14 @@ public class Comment {
 
     private String text;
 
-   /* @ManyToOne
-    @JoinColumn(name = "items.id")*/
-    @Column(name = "item_id ", nullable = false)
-    private Long itemId;
+    @ManyToOne
+    @JoinColumn(name = "item_id")
+    private Item item;
 
-    /* @ManyToOne
-    @JoinColumn(name = "users.id")*/
-    @Column(name = "author_id ", nullable = false)
-    private Long authorId;
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private User author;
+
+    @Column(name = "created", nullable = false)
+    private LocalDateTime created;
 }

@@ -1,8 +1,8 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.model;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
-@Builder
 @Entity
+@NoArgsConstructor
 @Table(name = "bookings")
 public class Booking {
 
@@ -27,11 +27,13 @@ public class Booking {
     @Column(name = "end_date", nullable = false)
     private LocalDateTime end;
 
-    @Column(name = "item_id", nullable = false)
-    private Long item;
+    @ManyToOne
+    @JoinColumn(name = "item_id")
+    private Item item;
 
-    @Column(name = "booker_id", nullable = false)
-    private Long booker;
+    @ManyToOne
+    @JoinColumn(name = "booker_id")
+    private User booker;
 
     @Enumerated(EnumType.STRING)
     private BookingStatus status;

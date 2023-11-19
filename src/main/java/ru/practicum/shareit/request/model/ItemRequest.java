@@ -1,4 +1,4 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.request.model;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -22,8 +22,6 @@ public class ItemRequest {
 
     private String description;
 
-    /*@ManyToOne
-    @JoinColumn(name = "users.id")*/
     @Column(name = "requestor_id", nullable = false)
     private Long requestorId;
 

@@ -3,6 +3,7 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.model.UserDto;
 
 import java.util.Collection;
 
@@ -35,9 +36,9 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserDto getById(@PathVariable(required = false) String id) {
+    public UserDto getById(@PathVariable(required = false) Long id) {
         log.info("Get user {}", id);
-        return userService.getById(Long.parseLong(id));
+        return userService.getById(id);
     }
 
     @GetMapping
