@@ -1,10 +1,8 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class ItemMapper {
 
     public ItemDto toItemDto(Item item) {

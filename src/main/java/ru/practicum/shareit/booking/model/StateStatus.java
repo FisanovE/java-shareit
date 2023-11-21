@@ -3,7 +3,12 @@ package ru.practicum.shareit.booking.model;
 import ru.practicum.shareit.common.exeptions.UnsupportedStatusException;
 
 public enum StateStatus {
-    ALL, CURRENT, PAST, FUTURE, WAITING, REJECTED;
+    ALL,
+    CURRENT,
+    PAST,
+    FUTURE,
+    WAITING,
+    REJECTED;
 
     public static StateStatus from(String state) {
         for (StateStatus value : StateStatus.values()) {

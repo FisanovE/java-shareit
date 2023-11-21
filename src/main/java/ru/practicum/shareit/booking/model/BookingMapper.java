@@ -1,11 +1,9 @@
 package ru.practicum.shareit.booking.model;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
-@Slf4j
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Component
 public class BookingMapper {
     public BookingDto toBookingDto(Booking booking) {

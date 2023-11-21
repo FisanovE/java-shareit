@@ -2,9 +2,11 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import ru.practicum.shareit.common.ValidateService;
 import ru.practicum.shareit.common.exeptions.ConflictDataException;
 import ru.practicum.shareit.common.exeptions.NotFoundException;
+
 import ru.practicum.shareit.user.model.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserMapper;
@@ -13,12 +15,13 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRepository userRepository;
     private final ValidateService validateService;
-    private final UserMapper mapper;
+    private final UserMapper userMapper;
+    private final UserRepository userRepository;
 
     public UserDto create(UserDto userDto) {
         validateService.checkNameForValid(userDto);
@@ -27,8 +30,8 @@ public class UserService {
         /*if (userRepository.existsUserByEmail(userDto.getEmail())) {
             throw new ConflictDataException("Email is already registered: " + userDto.getEmail());
         }*/
-        User user = mapper.toUser(userDto);
-        return mapper.toUserDto(userRepository.save(user));
+        User user = userMapper.toUser(userDto);
+        return userMapper.toUserDto(userRepository.save(user));
     }
 
     public UserDto update(Long id, UserDto userDto) {
@@ -46,7 +49,7 @@ public class UserService {
             user.setEmail(userDto.getEmail());
         }
 
-        return mapper.toUserDto(userRepository.save(user));
+        return userMapper.toUserDto(userRepository.save(user));
     }
 
     public void delete(Long id) {
@@ -55,13 +58,13 @@ public class UserService {
 
     public UserDto getById(Long id) {
         return userRepository.findById(id)
-                .map(mapper::toUserDto)
+                .map(userMapper::toUserDto)
                 .orElseThrow(() -> new NotFoundException("User not found: " + id));
     }
 
     public Collection<UserDto> getAll() {
         return userRepository.findAll().stream()
-                .map(mapper::toUserDto)
+                .map(userMapper::toUserDto)
                 .collect(Collectors.toList());
     }
 }

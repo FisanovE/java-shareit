@@ -25,6 +25,7 @@ public class Item {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "description", length = 1000)
     private String description;
 
     @Column(name = "is_available", nullable = false)

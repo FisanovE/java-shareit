@@ -1,8 +1,6 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.model.Booking;
@@ -19,26 +17,26 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Slf4j
+import static ru.practicum.shareit.common.Constants.*;
+
 @Service
 @RequiredArgsConstructor
 public class ItemService {
-    private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
     private final ValidateService validateService;
-    private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
-    private final ItemMapper mapper;
-    private final CommentMapper commentMapper;
     private final BookingMapper bookingMapper;
-    Sort sortById = Sort.by(Sort.Direction.ASC, "id");
+    private final ItemRepository itemRepository;
+    private final ItemMapper itemMapper;
+    private final CommentRepository commentRepository;
+    private final CommentMapper commentMapper;
+    private final UserRepository userRepository;
 
     public ItemDto create(Long userId, ItemDto itemDto) {
         validateService.checkItemDto(itemDto);
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found: " + userId));
-        Item item = mapper.toItem(itemDto);
+        Item item = itemMapper.toItem(itemDto);
         item.setOwner(user);
-        return mapper.toItemDto(itemRepository.save(item));
+        return itemMapper.toItemDto(itemRepository.save(item));
     }
 
     public ItemDto update(Long userId, Long itemId, ItemDto itemDto) {
@@ -51,13 +49,13 @@ public class ItemService {
         if (itemDto.getDescription() != null) item.setDescription(itemDto.getDescription());
         if (itemDto.getAvailable() != null) item.setAvailable(itemDto.getAvailable());
 
-        ItemDto finalItemDto = mapper.toItemDto(itemRepository.save(item));
+        ItemDto finalItemDto = itemMapper.toItemDto(itemRepository.save(item));
         setLastAndNextBooking(finalItemDto);
         setCommentsInItemDTO(finalItemDto);
         return finalItemDto;
     }
 
-    public void setLastAndNextBooking(ItemDto itemDto) {
+    private void setLastAndNextBooking(ItemDto itemDto) {
         Optional<Booking> lastBooking = bookingRepository.findFirstByItemIdAndStatusAndEndBeforeOrderByEndDesc(itemDto.getId(),
                 BookingStatus.APPROVED, LocalDateTime.now());
 
@@ -75,7 +73,7 @@ public class ItemService {
         itemDto.setNextBooking(nextBooking.map(bookingMapper::toBookingDtoNew).orElse(null));
     }
 
-    public void setCommentsInItemDTO(ItemDto itemDto) {
+    private void setCommentsInItemDTO(ItemDto itemDto) {
         List<CommentDto> comments = commentRepository.findAllByItemId(itemDto.getId()).stream()
                 .map(commentMapper::toCommentDto).collect(Collectors.toList());
         itemDto.setComments(comments);
@@ -88,7 +86,7 @@ public class ItemService {
     public ItemDto getById(Long id, Long userId) {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Item not found: " + id));
-        ItemDto itemDto = mapper.toItemDto(item);
+        ItemDto itemDto = itemMapper.toItemDto(item);
         if (item.getOwner().getId().equals(userId)) {
             setLastAndNextBooking(itemDto);
         } else {
@@ -99,8 +97,8 @@ public class ItemService {
     }
 
     public Collection<ItemDto> getAll(Long userId) {
-        return itemRepository.findItemsByOwnerId(userId, sortById).stream()
-                .map(mapper::toItemDto)
+        return itemRepository.findItemsByOwnerId(userId, sortByIdAsc).stream()
+                .map(itemMapper::toItemDto)
                 .peek(this::setLastAndNextBooking)
                 .collect(Collectors.toList());
     }
@@ -108,7 +106,7 @@ public class ItemService {
     public Collection<ItemDto> search(String text) {
         if (text.isEmpty()) return new ArrayList<>();
         return itemRepository.search(text).stream()
-                .map(mapper::toItemDto)
+                .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
@@ -121,7 +119,6 @@ public class ItemService {
                 .orElseThrow(() -> new ValidationException("Booking not found"));
         comment.setAuthor(user);
         comment.setItem(item);
-        comment.setCreated(LocalDateTime.now());
         return commentMapper.toCommentDto(commentRepository.save(comment));
     }
 

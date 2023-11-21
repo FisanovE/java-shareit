@@ -8,6 +8,8 @@ import ru.practicum.shareit.booking.model.BookingDtoIn;
 
 import java.util.Collection;
 
+import static ru.practicum.shareit.common.Constants.headerUserId;
+
 /**
  * TODO Sprint add-bookings.
  */
@@ -17,7 +19,6 @@ import java.util.Collection;
 @RequestMapping(path = "/bookings")
 public class BookingController {
     private final BookingService bookingService;
-    private static final String headerUserId = "X-Sharer-User-Id";
 
     @PostMapping
     public BookingDto create(@RequestHeader(headerUserId) Long userId,
