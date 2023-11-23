@@ -3,10 +3,11 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.model.*;
 
 import java.util.Collection;
+
+import static ru.practicum.shareit.common.Constants.HEADER_USER_ID;
 
 /**
  * TODO Sprint add-controllers.
@@ -16,44 +17,53 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @RequestMapping("/items")
 public class ItemController {
-    private final ItemService service;
-    private static final String headerUserId = "X-Sharer-User-Id";
+    private final ItemService itemService;
 
     @PostMapping
-    public ItemDto create(@RequestBody Item item,
-                          @RequestHeader(headerUserId) Long userId) {
-        log.info("Create Item");
-        return service.create(userId, item);
+    public ItemDto create(@RequestBody ItemDto itemDto,
+                          @RequestHeader(HEADER_USER_ID) Long userId) {
+        log.info("Create ItemDto");
+        return itemService.create(userId, itemDto);
     }
 
     @PatchMapping("/{id}")
-    public ItemDto update(@PathVariable Long id, @RequestBody Item item,
-                          @RequestHeader(headerUserId) Long userId) {
-        log.info("Update Item {}", id);
-        return service.update(userId, id, item);
+    public ItemDto update(@PathVariable Long id,
+                          @RequestBody ItemDto itemDto,
+                          @RequestHeader(HEADER_USER_ID) Long userId) {
+        log.info("Update ItemDto {}", id);
+        return itemService.update(userId, id, itemDto);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        log.info("Delete Item {}", id);
-        service.delete(id);
+        log.info("Delete ItemDto {}", id);
+        itemService.delete(id);
     }
 
     @GetMapping("/{id}")
-    public ItemDto getById(@PathVariable(required = false) Long id) {
+    public ItemDto getById(@PathVariable(required = false) Long id,
+                           @RequestHeader(HEADER_USER_ID) Long userId) {
         log.info("Get Item {}", id);
-        return service.getById(id);
+        return itemService.getById(id, userId);
     }
 
     @GetMapping
-    public Collection<ItemDto> getAll(@RequestHeader(headerUserId) Long userId) {
-        log.info("Get Items");
-        return service.getAll(userId);
+    public Collection<ItemDto> getAll(@RequestHeader(HEADER_USER_ID) Long userId) {
+        log.info("Get ItemDtos");
+        return itemService.getAll(userId);
     }
 
     @GetMapping("/search")
     public Collection<ItemDto> search(@RequestParam String text) {
         log.info("Get Items contains {}", text);
-        return service.search(text);
+        return itemService.search(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto createComment(@PathVariable(required = false) Long itemId,
+                                    @RequestBody Comment comment,
+                                    @RequestHeader(HEADER_USER_ID) Long userId) {
+        log.info("Create comment User {} item {}", userId, itemId);
+        return itemService.createComment(userId, itemId, comment);
     }
 }
