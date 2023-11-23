@@ -97,7 +97,7 @@ public class ItemService {
     }
 
     public Collection<ItemDto> getAll(Long userId) {
-        return itemRepository.findItemsByOwnerId(userId, sortByIdAsc).stream()
+        return itemRepository.findItemsByOwnerId(userId, SORT_BY_ID_ASC).stream()
                 .map(itemMapper::toItemDto)
                 .peek(this::setLastAndNextBooking)
                 .collect(Collectors.toList());

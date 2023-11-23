@@ -7,7 +7,7 @@ import ru.practicum.shareit.item.model.*;
 
 import java.util.Collection;
 
-import static ru.practicum.shareit.common.Constants.headerUserId;
+import static ru.practicum.shareit.common.Constants.HEADER_USER_ID;
 
 /**
  * TODO Sprint add-controllers.
@@ -21,7 +21,7 @@ public class ItemController {
 
     @PostMapping
     public ItemDto create(@RequestBody ItemDto itemDto,
-                          @RequestHeader(headerUserId) Long userId) {
+                          @RequestHeader(HEADER_USER_ID) Long userId) {
         log.info("Create ItemDto");
         return itemService.create(userId, itemDto);
     }
@@ -29,7 +29,7 @@ public class ItemController {
     @PatchMapping("/{id}")
     public ItemDto update(@PathVariable Long id,
                           @RequestBody ItemDto itemDto,
-                          @RequestHeader(headerUserId) Long userId) {
+                          @RequestHeader(HEADER_USER_ID) Long userId) {
         log.info("Update ItemDto {}", id);
         return itemService.update(userId, id, itemDto);
     }
@@ -42,13 +42,13 @@ public class ItemController {
 
     @GetMapping("/{id}")
     public ItemDto getById(@PathVariable(required = false) Long id,
-                           @RequestHeader(headerUserId) Long userId) {
+                           @RequestHeader(HEADER_USER_ID) Long userId) {
         log.info("Get Item {}", id);
         return itemService.getById(id, userId);
     }
 
     @GetMapping
-    public Collection<ItemDto> getAll(@RequestHeader(headerUserId) Long userId) {
+    public Collection<ItemDto> getAll(@RequestHeader(HEADER_USER_ID) Long userId) {
         log.info("Get ItemDtos");
         return itemService.getAll(userId);
     }
@@ -62,7 +62,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public CommentDto createComment(@PathVariable(required = false) Long itemId,
                                     @RequestBody Comment comment,
-                                    @RequestHeader(headerUserId) Long userId) {
+                                    @RequestHeader(HEADER_USER_ID) Long userId) {
         log.info("Create comment User {} item {}", userId, itemId);
         return itemService.createComment(userId, itemId, comment);
     }

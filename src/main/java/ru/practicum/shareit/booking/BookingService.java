@@ -74,7 +74,7 @@ public class BookingService {
 
         switch (status) {
             case ALL:
-                return bookingRepository.findAllByBookerId(userId, sortByStartDesc).stream()
+                return bookingRepository.findAllByBookerId(userId, SORT_BY_START_DESC).stream()
                         .map(bookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case WAITING:
@@ -84,11 +84,11 @@ public class BookingService {
                         .map(bookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case PAST:
-                return bookingRepository.findAllByBookerIdAndEndIsBefore(userId, LocalDateTime.now(), sortByStartDesc).stream()
+                return bookingRepository.findAllByBookerIdAndEndIsBefore(userId, LocalDateTime.now(), SORT_BY_START_DESC).stream()
                         .map(bookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case FUTURE:
-                return bookingRepository.findAllByBookerIdAndStartIsAfter(userId, LocalDateTime.now(), sortByStartDesc).stream()
+                return bookingRepository.findAllByBookerIdAndStartIsAfter(userId, LocalDateTime.now(), SORT_BY_START_DESC).stream()
                         .map(bookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case CURRENT:
@@ -108,7 +108,7 @@ public class BookingService {
 
         switch (status) {
             case ALL:
-                return bookingRepository.findAllByItemOwnerId(userId, sortByStartDesc).stream()
+                return bookingRepository.findAllByItemOwnerId(userId, SORT_BY_START_DESC).stream()
                         .map(bookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case WAITING:
@@ -118,11 +118,11 @@ public class BookingService {
                         .map(bookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case PAST:
-                return bookingRepository.findByItemOwnerIdAndEndIsBefore(userId, LocalDateTime.now(), sortByStartDesc).stream()
+                return bookingRepository.findByItemOwnerIdAndEndIsBefore(userId, LocalDateTime.now(), SORT_BY_START_DESC).stream()
                         .map(bookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case FUTURE:
-                return bookingRepository.findByItemOwnerIdAndStartIsAfter(userId, LocalDateTime.now(), sortByStartDesc).stream()
+                return bookingRepository.findByItemOwnerIdAndStartIsAfter(userId, LocalDateTime.now(), SORT_BY_START_DESC).stream()
                         .map(bookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case CURRENT:
