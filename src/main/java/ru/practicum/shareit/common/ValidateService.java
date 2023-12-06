@@ -14,13 +14,18 @@ import java.util.regex.Pattern;
 @Service
 public class ValidateService {
 
+    public void checkPageableParameters(Integer from, Integer size) throws ValidationException {
+        if (from != null && from < 0) throw new ValidationException("Parameter \"from\" must not be less than 0");
+        if (size != null && size < 1) throw new ValidationException("Parameter \"size\" must not be less than 1");
+    }
+
     public void checkTimeForValid(LocalDateTime startTime, LocalDateTime endTime) throws ValidationException {
         if (startTime == null) throw new ValidationException("Start time must not be equals null");
         if (endTime == null) throw new ValidationException("End time must not be equals null");
-        if (endTime.isBefore(startTime)) throw new ValidationException("End time must be after Start time");
-        if (endTime.equals(startTime)) throw new ValidationException("End time must not be equals Start time");
         if (startTime.isBefore(LocalDateTime.now())) throw new ValidationException("Start time must not be in past");
         if (endTime.isBefore(LocalDateTime.now())) throw new ValidationException("End time must not be in past");
+        if (endTime.isBefore(startTime)) throw new ValidationException("End time must be after Start time");
+        if (endTime.equals(startTime)) throw new ValidationException("End time must not be equals Start time");
     }
 
     public void checkNameForValid(UserDto userDto) throws ValidationException {

@@ -10,9 +10,6 @@ import java.util.Collection;
 
 import static ru.practicum.shareit.common.Constants.HEADER_USER_ID;
 
-/**
- * TODO Sprint add-bookings.
- */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -44,15 +41,19 @@ public class BookingController {
 
     @GetMapping
     public Collection<BookingDto> getAllByBooker(@RequestHeader(HEADER_USER_ID) Long userId,
-                                                 @RequestParam(defaultValue = "ALL", required = false) String state) {
-        log.info("Get BookingDtos Booker {} state {}", userId, state);
-        return bookingService.getAllByBooker(userId, state);
+                                                 @RequestParam(defaultValue = "ALL", required = false) String state,
+                                                 @RequestParam(defaultValue = "0", required = false) Integer from,
+                                                 @RequestParam(defaultValue = "10", required = false) Integer size) {
+        log.info("Get BookingDtos Booker {} state {} from {} size {}", userId, state, from, size);
+        return bookingService.getAllByBooker(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public Collection<BookingDto> getAllByOwner(@RequestHeader(HEADER_USER_ID) Long userId,
-                                                @RequestParam(defaultValue = "ALL", required = false) String state) {
-        log.info("Get BookingDtos Owner {} state {}", userId, state);
-        return bookingService.getAllByOwner(userId, state);
+                                                @RequestParam(defaultValue = "ALL", required = false) String state,
+                                                @RequestParam(defaultValue = "0", required = false) Integer from,
+                                                @RequestParam(defaultValue = "10", required = false) Integer size) {
+        log.info("Get BookingDtos Owner {} state {} from {} size {}", userId, state, from, size);
+        return bookingService.getAllByOwner(userId, state, from, size);
     }
 }

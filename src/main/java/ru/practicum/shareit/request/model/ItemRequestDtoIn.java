@@ -1,4 +1,4 @@
-package ru.practicum.shareit.common.exeptions;
+package ru.practicum.shareit.request.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ErrorResponse {
-    private String error;
-    private String stackTrace;
+public class ItemRequestDtoIn {
+    private String description;
 }

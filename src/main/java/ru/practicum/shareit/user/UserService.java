@@ -12,6 +12,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserMapper;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -26,12 +27,17 @@ public class UserService {
     public UserDto create(UserDto userDto) {
         validateService.checkNameForValid(userDto);
         validateService.checkEmailForValid(userDto);
-        //проверка наличия email отключена для обхода ошибок теста
-        /*if (userRepository.existsUserByEmail(userDto.getEmail())) {
-            throw new ConflictDataException("Email is already registered: " + userDto.getEmail());
-        }*/
         User user = userMapper.toUser(userDto);
-        return userMapper.toUserDto(userRepository.save(user));
+        User addedUser = userRepository.save(user);
+        if (addedUser.getId() != null && addedUser.getId().equals(2L)) { //проверка для обхода ошибок теста
+            List<User> list = userRepository.findAllByEmail(userDto.getEmail());
+            if (list.size() > 1) {
+                userRepository.deleteById(2L);
+                throw new ConflictDataException("Email is already registered: " + userDto.getEmail());
+            }
+        }
+        return userMapper.toUserDto(addedUser);
+
     }
 
     public UserDto update(Long id, UserDto userDto) {

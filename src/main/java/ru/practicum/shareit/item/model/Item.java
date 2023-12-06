@@ -1,17 +1,12 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 
-/**
- * TODO Sprint add-controllers.
- */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "items")
@@ -36,6 +31,6 @@ public class Item {
     private User owner;
 
     @Column(name = "request_id")
-    private Long request;
+    private Long requestId;
 
 }

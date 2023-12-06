@@ -24,10 +24,10 @@ public class BookingMapper {
         return booking;
     }
 
-    public BookingDtoForItem toBookingDtoNew(Booking booking) {
-        BookingDtoForItem bookingDtoForItem = new BookingDtoForItem();
-        bookingDtoForItem.setId(booking.getId());
-        bookingDtoForItem.setBookerId(booking.getBooker().getId());
-        return bookingDtoForItem;
+    public BookingDtoForItemDto toBookingDtoForItemDto(Booking booking) {
+        BookingDtoForItemDto bookingDtoForItemDto = new BookingDtoForItemDto();
+        bookingDtoForItemDto.setId(booking.getId());
+        bookingDtoForItemDto.setBookerId(booking.getBooker().getId());
+        return bookingDtoForItemDto;
     }
 }
