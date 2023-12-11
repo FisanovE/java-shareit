@@ -9,12 +9,18 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.common.ValidateService;
+import ru.practicum.shareit.booking.model.BookingDtoForItemDto;
+import ru.practicum.shareit.booking.model.BookingMapper;
+import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.common.exeptions.NotFoundException;
 import ru.practicum.shareit.common.exeptions.ValidationException;
-import ru.practicum.shareit.item.model.*;
+import ru.practicum.shareit.item.model.Comment;
+import ru.practicum.shareit.item.model.CommentDto;
+import ru.practicum.shareit.item.model.CommentMapper;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.model.ItemDto;
+import ru.practicum.shareit.item.model.ItemMapper;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -23,8 +29,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static ru.practicum.shareit.common.Constants.SORT_BY_ID_ASC;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,15 +49,13 @@ class ItemServiceTest {
     @Mock
     private ItemRepository itemRepository;
     @Mock
-    private BookingService bookingService;
-    @Mock
     private BookingRepository bookingRepository;
     @Mock
     private CommentRepository commentRepository;
     @Mock
-    private ValidateService validateService; // не удалять, для работы void методов ValidateService
-    @Mock
     private CommentMapper commentMapper;
+    @Mock
+    private BookingMapper bookingMapper;
 
     @InjectMocks
     private ItemService itemService;
@@ -108,8 +119,12 @@ class ItemServiceTest {
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
         when(itemRepository.save(item)).thenReturn(savedItem);
         when(itemMapper.toItemDto(savedItem)).thenReturn(itemDtoUpdated);
-        when(bookingService.getLastBooking(any(Long.class))).thenReturn(null);
-        when(bookingService.getNextBooking(any(Long.class))).thenReturn(null);
+        when(bookingRepository.findFirstByItemIdAndStatusAndEndBeforeOrderByEndDesc(anyLong(),
+                any(BookingStatus.class), any(LocalDateTime.class))).thenReturn(Optional.empty());
+        when(bookingRepository.findByItemIdAndStatusAndStartBeforeAndEndAfter(anyLong(),
+                any(BookingStatus.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(Optional.empty());
+        when(bookingRepository.findFirstByItemIdAndStatusAndStartAfterOrderByStart(anyLong(),
+                any(BookingStatus.class), any(LocalDateTime.class))).thenReturn(Optional.empty());
         when(commentRepository.findAllByItemId(itemId)).thenReturn(new ArrayList<>());
 
 
@@ -138,10 +153,13 @@ class ItemServiceTest {
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
         when(itemRepository.save(item)).thenReturn(savedItem);
         when(itemMapper.toItemDto(savedItem)).thenReturn(itemDtoUpdated);
-        when(bookingService.getLastBooking(any(Long.class))).thenReturn(null);
-        when(bookingService.getNextBooking(any(Long.class))).thenReturn(null);
+        when(bookingRepository.findFirstByItemIdAndStatusAndEndBeforeOrderByEndDesc(anyLong(),
+                any(BookingStatus.class), any(LocalDateTime.class))).thenReturn(Optional.empty());
+        when(bookingRepository.findByItemIdAndStatusAndStartBeforeAndEndAfter(anyLong(),
+                any(BookingStatus.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(Optional.empty());
+        when(bookingRepository.findFirstByItemIdAndStatusAndStartAfterOrderByStart(anyLong(),
+                any(BookingStatus.class), any(LocalDateTime.class))).thenReturn(Optional.empty());
         when(commentRepository.findAllByItemId(itemId)).thenReturn(new ArrayList<>());
-
 
         ItemDto actualItemDto = itemService.update(userId, itemId, itemDto);
 
@@ -211,8 +229,12 @@ class ItemServiceTest {
 
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
         when(itemMapper.toItemDto(item)).thenReturn(itemDto);
-        when(bookingService.getLastBooking(any(Long.class))).thenReturn(null);
-        when(bookingService.getNextBooking(any(Long.class))).thenReturn(null);
+        when(bookingRepository.findFirstByItemIdAndStatusAndEndBeforeOrderByEndDesc(anyLong(),
+                any(BookingStatus.class), any(LocalDateTime.class))).thenReturn(Optional.empty());
+        when(bookingRepository.findByItemIdAndStatusAndStartBeforeAndEndAfter(anyLong(),
+                any(BookingStatus.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(Optional.empty());
+        when(bookingRepository.findFirstByItemIdAndStatusAndStartAfterOrderByStart(anyLong(),
+                any(BookingStatus.class), any(LocalDateTime.class))).thenReturn(Optional.empty());
         when(commentRepository.findAllByItemId(itemId)).thenReturn(new ArrayList<>());
 
         ItemDto actualItemDto = itemService.getById(itemId, userId);
@@ -267,8 +289,13 @@ class ItemServiceTest {
 
         when(itemRepository.findItemsByOwnerId(userId, sortedById)).thenReturn(items);
         when(itemMapper.toItemDto(item)).thenReturn(itemDto);
-        when(bookingService.getLastBooking(any(Long.class))).thenReturn(null);
-        when(bookingService.getNextBooking(any(Long.class))).thenReturn(null);
+        when(bookingRepository.findFirstByItemIdAndStatusAndEndBeforeOrderByEndDesc(anyLong(),
+                any(BookingStatus.class), any(LocalDateTime.class))).thenReturn(Optional.empty());
+        when(bookingRepository.findByItemIdAndStatusAndStartBeforeAndEndAfter(anyLong(),
+                any(BookingStatus.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(Optional.empty());
+        when(bookingRepository.findFirstByItemIdAndStatusAndStartAfterOrderByStart(anyLong(),
+                any(BookingStatus.class), any(LocalDateTime.class))).thenReturn(Optional.empty());
+        when(commentRepository.findAllByItemId(item.getId())).thenReturn(new ArrayList<>());
 
         List<ItemDto> actualItemDto = (List<ItemDto>) itemService.getAll(userId, from, size);
 
@@ -420,6 +447,55 @@ class ItemServiceTest {
         List<Item> actualItems = itemService.getItemsByRequestId(itemRequestId);
 
         assertEquals(items, actualItems);
+    }
+
+    @Test
+    void getLastBooking_whenLastBookingActionIsEmpty_thenReturnDto() {
+        Long itemId = 0L;
+        Booking booking = new Booking();
+        BookingDtoForItemDto dto = new BookingDtoForItemDto();
+
+        when(bookingRepository.findFirstByItemIdAndStatusAndEndBeforeOrderByEndDesc(any(Long.class),
+                any(BookingStatus.class), any(LocalDateTime.class))).thenReturn(Optional.of(booking));
+        when(bookingRepository.findByItemIdAndStatusAndStartBeforeAndEndAfter(any(Long.class),
+                any(BookingStatus.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(Optional.of(booking));
+        when(bookingMapper.toBookingDtoForItemDto(booking)).thenReturn(dto);
+
+        BookingDtoForItemDto actualDto = itemService.getLastBooking(itemId);
+
+        assertEquals(dto, actualDto);
+    }
+
+    @Test
+    void getLastBooking_whenLastBookingActionIsNotEmpty_thenReturnDto() {
+        Long itemId = 0L;
+        Booking booking = new Booking();
+        BookingDtoForItemDto dto = new BookingDtoForItemDto();
+
+        when(bookingRepository.findFirstByItemIdAndStatusAndEndBeforeOrderByEndDesc(any(Long.class),
+                any(BookingStatus.class), any(LocalDateTime.class))).thenReturn(Optional.of(booking));
+        when(bookingRepository.findByItemIdAndStatusAndStartBeforeAndEndAfter(any(Long.class),
+                any(BookingStatus.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(Optional.empty());
+        when(bookingMapper.toBookingDtoForItemDto(booking)).thenReturn(dto);
+
+        BookingDtoForItemDto actualDto = itemService.getLastBooking(itemId);
+
+        assertEquals(dto, actualDto);
+    }
+
+    @Test
+    void getNextBooking() {
+        Long itemId = 0L;
+        Booking booking = new Booking();
+        BookingDtoForItemDto dto = new BookingDtoForItemDto();
+
+        when(bookingRepository.findFirstByItemIdAndStatusAndStartAfterOrderByStart(any(Long.class),
+                any(BookingStatus.class), any(LocalDateTime.class))).thenReturn(Optional.of(booking));
+        when(bookingMapper.toBookingDtoForItemDto(booking)).thenReturn(dto);
+
+        BookingDtoForItemDto actualDto = itemService.getNextBooking(itemId);
+
+        assertEquals(dto, actualDto);
     }
 
 }

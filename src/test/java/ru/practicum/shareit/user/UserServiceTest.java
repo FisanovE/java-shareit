@@ -7,10 +7,8 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.practicum.shareit.common.ValidateService;
 import ru.practicum.shareit.common.exeptions.ConflictDataException;
 import ru.practicum.shareit.common.exeptions.NotFoundException;
-import ru.practicum.shareit.common.exeptions.ValidationException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserDto;
 import ru.practicum.shareit.user.model.UserMapper;
@@ -21,7 +19,10 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -29,8 +30,6 @@ class UserServiceTest {
     private UserMapper userMapper;
     @Mock
     private UserRepository userRepository;
-    @Mock
-    private ValidateService validateService;
     @Captor
     private ArgumentCaptor<User> userArgumentCaptor;
     @InjectMocks
@@ -64,7 +63,7 @@ class UserServiceTest {
                 () -> userService.create(expectedUserDto));
     }
 
-    @Test
+   /* @Test
     void create_whenUserNotValid_thenNotSavedUser() {
         User userToSave = new User();
         UserDto expectedUserDto = new UserDto();
@@ -75,7 +74,7 @@ class UserServiceTest {
                 () -> userService.create(expectedUserDto));
 
         verify(userRepository, never()).save(userToSave);
-    }
+    }*/
 
     @Test
     void update_whenUserFound_thenUpdatedAvailableFields() {

@@ -3,6 +3,8 @@ package ru.practicum.shareit.request.model;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @Component
 public class ItemRequestMapper {
@@ -17,6 +19,7 @@ public class ItemRequestMapper {
     public ItemRequest toItemRequest(ItemRequestDtoIn itemRequestDtoIn) {
         return ItemRequest.builder()
                 .description(itemRequestDtoIn.getDescription())
+                .created(LocalDateTime.now())
                 .build();
     }
 }

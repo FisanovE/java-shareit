@@ -3,8 +3,12 @@ package ru.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.model.*;
-import ru.practicum.shareit.common.ValidateService;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingDto;
+import ru.practicum.shareit.booking.model.BookingDtoIn;
+import ru.practicum.shareit.booking.model.BookingMapper;
+import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.model.StateStatus;
 import ru.practicum.shareit.common.exeptions.NotFoundException;
 import ru.practicum.shareit.common.exeptions.UnsupportedStatusException;
 import ru.practicum.shareit.common.exeptions.ValidationException;
@@ -14,15 +18,17 @@ import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.common.Constants.*;
+import static ru.practicum.shareit.common.Constants.SORT_BY_ID_ASC;
+import static ru.practicum.shareit.common.Constants.SORT_BY_START_DESC;
 
 @RequiredArgsConstructor
 @Service
 public class BookingService {
-    private final ValidateService validateService;
 
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
@@ -36,10 +42,22 @@ public class BookingService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found: " + userId));
         if (!item.getAvailable()) throw new ValidationException("Owner banned rent Item: " + bookingDtoIn.getItemId());
-        validateService.checkTimeForValid(bookingDtoIn.getStart(), bookingDtoIn.getEnd());
+        if (bookingDtoIn.getStart().isBefore(LocalDateTime.now()))
+            throw new ValidationException("Start time must not be in past");
+        if (bookingDtoIn.getEnd().isBefore(LocalDateTime.now()))
+            throw new ValidationException("End time must not be in past");
+        if (bookingDtoIn.getEnd().isBefore(bookingDtoIn.getStart()))
+            throw new ValidationException("End time must be after Start time");
+        if (bookingDtoIn.getEnd().equals(bookingDtoIn.getStart()))
+            throw new ValidationException("End time must not be equals Start time");
         Booking booking = bookingMapper.toBooking(bookingDtoIn);
         if (Objects.equals(userId, item.getOwner().getId())) throw new NotFoundException("Booker ID: " + userId
                 + " not be equal to owner ID: " + item.getOwner().getId());
+
+        List<Booking> bookingRents = bookingRepository.findAllByItemIdAndStatusAndStartOrEnd(item.getId(),
+                bookingDtoIn.getStart(), bookingDtoIn.getEnd());
+        if (!bookingRents.isEmpty()) throw new ValidationException("Item is rent in this time");
+
         booking.setItem(item);
         booking.setStatus(BookingStatus.WAITING);
         booking.setBooker(user);
@@ -49,7 +67,10 @@ public class BookingService {
     public BookingDto update(Long userId, Long bookingId, Boolean approved) {
         Booking bookingUpdate = bookingRepository.findByBookingIdAndOwnerId(bookingId, userId)
                 .orElseThrow(() -> new NotFoundException("Booking not found: " + bookingId + " user " + userId));
-        validateService.checkMatchingIdUsers(userId, bookingUpdate.getItem().getOwner().getId());
+        if (!Objects.equals(userId, bookingUpdate.getItem().getOwner().getId())) {
+            throw new NotFoundException("ID: " + userId + " is not equal to owner ID: " +
+                    bookingUpdate.getItem().getOwner().getId());
+        }
         if (bookingUpdate.getStatus().equals(BookingStatus.APPROVED)) {
             throw new ValidationException("Booking has already been approved");
         }
@@ -67,14 +88,14 @@ public class BookingService {
         return bookingMapper.toBookingDto(booking);
     }
 
-    public Collection<BookingDto> getAllByBooker(Long userId, String state, Integer from, Integer size) {
-        validateService.checkPageableParameters(from, size);
+    public Collection<BookingDto> getAllByBooker(Long userId, String state, int from, int size) {
         StateStatus status = StateStatus.from(state);
         if (!userRepository.existsById(userId)) throw new NotFoundException("User not found: " + userId);
 
         switch (status) {
             case ALL:
-                return bookingRepository.findAllByBookerId(userId, PageRequest.of(from / size, size, SORT_BY_START_DESC)).stream()
+                return bookingRepository.findAllByBookerId(userId, PageRequest.of(from / size, size, SORT_BY_START_DESC))
+                        .stream()
                         .map(bookingMapper::toBookingDto)
                         .collect(Collectors.toList());
             case WAITING:
@@ -103,8 +124,7 @@ public class BookingService {
         }
     }
 
-    public Collection<BookingDto> getAllByOwner(Long userId, String state, Integer from, Integer size) {
-        validateService.checkPageableParameters(from, size);
+    public Collection<BookingDto> getAllByOwner(Long userId, String state, int from, int size) {
         StateStatus status = StateStatus.from(state);
 
         if (!userRepository.existsById(userId)) throw new NotFoundException("User not found: " + userId);
@@ -138,25 +158,5 @@ public class BookingService {
             default:
                 throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
         }
-    }
-
-    public BookingDtoForItemDto getLastBooking(Long itemId) {
-        Optional<Booking> lastBooking = bookingRepository.findFirstByItemIdAndStatusAndEndBeforeOrderByEndDesc(itemId,
-                BookingStatus.APPROVED, LocalDateTime.now());
-
-        Optional<Booking> lastBookingAction = bookingRepository.findByItemIdAndStatusAndStartBeforeAndEndAfter(itemId,
-                BookingStatus.APPROVED, LocalDateTime.now(), LocalDateTime.now());
-
-        if (lastBookingAction.isPresent()) {
-            return lastBookingAction.map(bookingMapper::toBookingDtoForItemDto).orElse(null);
-        } else {
-            return lastBooking.map(bookingMapper::toBookingDtoForItemDto).orElse(null);
-        }
-    }
-
-    public BookingDtoForItemDto getNextBooking(Long itemId) {
-        Optional<Booking> nextBooking = bookingRepository.findFirstByItemIdAndStatusAndStartAfterOrderByStart(itemId,
-                BookingStatus.APPROVED, LocalDateTime.now());
-        return nextBooking.map(bookingMapper::toBookingDtoForItemDto).orElse(null);
     }
 }

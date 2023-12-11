@@ -31,7 +31,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByBookerIdAndStartIsAfter(Long bookerId, LocalDateTime current, Pageable pageable);
 
     List<Booking> findAllByBookerIdAndStartIsBeforeAndEndIsAfter(Long bookerId, LocalDateTime startBefore,
-                                                                       LocalDateTime endAfter, Pageable pageable);
+                                                                 LocalDateTime endAfter, Pageable pageable);
 
     List<Booking> findAllByItemOwnerId(Long userId, Pageable pageable);
 
@@ -42,7 +42,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByItemOwnerIdAndStartIsAfter(Long bookerId, LocalDateTime current, Pageable pageable);
 
     List<Booking> findByItemOwnerIdAndStartIsBeforeAndEndIsAfter(Long bookerId, LocalDateTime startBefore,
-                                                                       LocalDateTime endAfter, Pageable pageable);
+                                                                 LocalDateTime endAfter, Pageable pageable);
 
     Optional<Booking> findFirstByBookerIdAndItemIdAndEndIsBefore(Long bookerId, Long itemId, LocalDateTime end);
 
@@ -53,4 +53,19 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<Booking> findByItemIdAndStatusAndStartBeforeAndEndAfter(Long itemId, BookingStatus status,
                                                                      LocalDateTime startBefore,
                                                                      LocalDateTime endAfter);
+
+    Optional<Booking> findFirstByItemIdAndStatusAndStartAfterAndEndBefore(Long itemId, BookingStatus status,
+                                                                          LocalDateTime startAfter,
+                                                                          LocalDateTime endBefore);
+
+    Optional<Booking> findByItemIdAndStatusAndStartAndEnd(Long itemId, BookingStatus status,
+                                                          LocalDateTime startAfter,
+                                                          LocalDateTime endBefore);
+
+    @Query("SELECT b " +
+            "FROM Booking b " +
+            "WHERE b.item.id = ?1 AND b.status = 'APPROVED' " +
+            "AND ((b.start >= ?2 AND b.start <= ?3) OR (b.end >= ?2 AND b.end <= ?3) OR (b.start > ?2 AND b.end < ?3)) ")
+    List<Booking> findAllByItemIdAndStatusAndStartOrEnd(Long itemId, LocalDateTime startAfter,
+                                                        LocalDateTime endBefore);
 }

@@ -7,10 +7,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import ru.practicum.shareit.common.ValidateService;
 import ru.practicum.shareit.common.exeptions.NotFoundException;
 import ru.practicum.shareit.common.exeptions.ValidationException;
-import ru.practicum.shareit.item.ItemService;
+import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.model.ItemRequestDto;
@@ -26,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 import static ru.practicum.shareit.common.Constants.SORT_BY_CREATED_DESC;
+import static ru.practicum.shareit.common.Constants.SORT_BY_ID_ASC;
 
 @ExtendWith(MockitoExtension.class)
 class ItemRequestServiceTest {
@@ -33,13 +33,11 @@ class ItemRequestServiceTest {
     @Mock
     private UserRepository userRepository;
     @Mock
-    private ValidateService validateService; // не удалять, для работы void методов ValidateService
-    @Mock
     private RequestRepository requestRepository;
     @Mock
     private ItemRequestMapper itemRequestMapper;
     @Mock
-    private ItemService itemService;
+    private ItemRepository itemRepository;
 
     @InjectMocks
     private ItemRequestService itemRequestService;
@@ -50,11 +48,13 @@ class ItemRequestServiceTest {
         Long userId = 0L;
         String description = "blah-blah-blah";
         ItemRequest itemRequest = new ItemRequest();
+        itemRequest.setDescription(description);
         ItemRequestDto itemRequestDto = new ItemRequestDto();
         ItemRequestDtoIn itemRequestDtoIn = new ItemRequestDtoIn();
         itemRequestDtoIn.setDescription(description);
 
         when(userRepository.existsById(userId)).thenReturn(true);
+        when(itemRequestMapper.toItemRequest(itemRequestDtoIn)).thenReturn(itemRequest);
         when(requestRepository.save(any(ItemRequest.class))).thenReturn(itemRequest);
         when(itemRequestMapper.toItemRequestDto(itemRequest)).thenReturn(itemRequestDto);
 
@@ -98,7 +98,7 @@ class ItemRequestServiceTest {
         when(userRepository.existsById(userId)).thenReturn(true);
         when(requestRepository.findAllByRequestorId(userId, SORT_BY_CREATED_DESC)).thenReturn(itemRequests);
         when(itemRequestMapper.toItemRequestDto(itemRequest)).thenReturn(itemRequestDto);
-        when(itemService.getItemsByRequestId(itemRequestDto.getId())).thenReturn(items);
+        when(itemRepository.findAllByRequestId(itemRequestDto.getId(), SORT_BY_ID_ASC)).thenReturn(items);
 
         List<ItemRequestDto> actualItemRequests = itemRequestService.getAllByUser(userId);
 
@@ -131,7 +131,7 @@ class ItemRequestServiceTest {
         when(userRepository.existsById(userId)).thenReturn(true);
         when(requestRepository.findAllByRequestorIdNot(userId, sortedByCreated)).thenReturn(itemRequests);
         when(itemRequestMapper.toItemRequestDto(itemRequest)).thenReturn(itemRequestDto);
-        when(itemService.getItemsByRequestId(itemRequestDto.getId())).thenReturn(items);
+        when(itemRepository.findAllByRequestId(itemRequestDto.getId(), SORT_BY_ID_ASC)).thenReturn(items);
 
         List<ItemRequestDto> actualItemRequests = (List<ItemRequestDto>) itemRequestService.getAll(userId, from, size);
 
@@ -165,7 +165,7 @@ class ItemRequestServiceTest {
         when(userRepository.existsById(userId)).thenReturn(true);
         when(requestRepository.findById(requestId)).thenReturn(Optional.of(itemRequest));
         when(itemRequestMapper.toItemRequestDto(itemRequest)).thenReturn(itemRequestDto);
-        when(itemService.getItemsByRequestId(requestId)).thenReturn(items);
+        when(itemRepository.findAllByRequestId(itemRequestDto.getId(), SORT_BY_ID_ASC)).thenReturn(items);
 
         ItemRequestDto actualItemRequest = itemRequestService.getById(requestId, userId);
 

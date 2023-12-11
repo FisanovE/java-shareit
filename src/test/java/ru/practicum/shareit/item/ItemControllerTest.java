@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,18 +12,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.CommentDto;
 import ru.practicum.shareit.item.model.ItemDto;
-import ru.practicum.shareit.user.UserController;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
-import static java.awt.SystemColor.text;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -146,7 +145,7 @@ class ItemControllerTest {
 
     @Test
     void createComment_whenCommentValid_thenStatus200andCommentReturned() throws Exception {
-        LocalDateTime now = LocalDateTime.of(2023, 12, 3, 19, 53,17);
+        LocalDateTime now = LocalDateTime.of(2023, 12, 3, 19, 53, 17);
         Comment comment = new Comment();
         CommentDto commentDto = new CommentDto(1L, "blah-blah-blah", "authorName", now);
         when(itemService.createComment(anyLong(), anyLong(), any(Comment.class))).thenReturn(commentDto);

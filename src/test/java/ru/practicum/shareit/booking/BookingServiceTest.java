@@ -7,12 +7,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
-import ru.practicum.shareit.booking.model.*;
-import ru.practicum.shareit.common.ValidateService;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingDto;
+import ru.practicum.shareit.booking.model.BookingDtoIn;
+import ru.practicum.shareit.booking.model.BookingMapper;
+import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.common.exeptions.NotFoundException;
 import ru.practicum.shareit.common.exeptions.UnsupportedStatusException;
 import ru.practicum.shareit.common.exeptions.ValidationException;
 import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
@@ -23,7 +27,10 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static ru.practicum.shareit.common.Constants.SORT_BY_ID_ASC;
 import static ru.practicum.shareit.common.Constants.SORT_BY_START_DESC;
 
@@ -38,7 +45,7 @@ class BookingServiceTest {
     @Mock
     private BookingMapper bookingMapper;
     @Mock
-    private ValidateService validateService;
+    private ItemService itemService;
 
     @InjectMocks
     private BookingService bookingService;
@@ -60,7 +67,7 @@ class BookingServiceTest {
         item.setAvailable(true);
         item.setOwner(owner);
         Booking booking = new Booking();
-        BookingDtoIn bookingDtoIn = new BookingDtoIn(LocalDateTime.now(), LocalDateTime.now().plusMinutes(1L), itemId);
+        BookingDtoIn bookingDtoIn = new BookingDtoIn(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(2), itemId);
         BookingDto bookingDto = new BookingDto();
 
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
@@ -86,7 +93,7 @@ class BookingServiceTest {
         item.setAvailable(true);
         item.setOwner(owner);
         Booking booking = new Booking();
-        BookingDtoIn bookingDtoIn = new BookingDtoIn(LocalDateTime.now(), LocalDateTime.now().plusMinutes(1L), itemId);
+        BookingDtoIn bookingDtoIn = new BookingDtoIn(LocalDateTime.now().plusMinutes(1), LocalDateTime.now().plusMinutes(2), itemId);
 
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
         when(userRepository.findById(ownerId)).thenReturn(Optional.of(booker));
@@ -166,7 +173,7 @@ class BookingServiceTest {
         Long userId = 0L;
         Long bookingId = 1L;
         User owner = new User();
-        owner.setId(1L);
+        owner.setId(userId);
         Item item = new Item();
         item.setOwner(owner);
         Boolean approved = true;
@@ -209,7 +216,7 @@ class BookingServiceTest {
         Long userId = 0L;
         Long bookingId = 1L;
         User owner = new User();
-        owner.setId(1L);
+        owner.setId(userId);
         Item item = new Item();
         item.setOwner(owner);
         Boolean approved = false;
@@ -233,7 +240,7 @@ class BookingServiceTest {
         Long userId = 0L;
         Long bookingId = 1L;
         User owner = new User();
-        owner.setId(1L);
+        owner.setId(userId);
         Item item = new Item();
         item.setOwner(owner);
         Boolean approved = true;
@@ -573,54 +580,5 @@ class BookingServiceTest {
 
         assertThrows(UnsupportedStatusException.class,
                 () -> bookingService.getAllByOwner(userId, state, from, size));
-    }
-
-    @Test
-    void getLastBooking_whenLastBookingActionIsEmpty_thenReturnDto() {
-        Long itemId = 0L;
-        Booking booking = new Booking();
-        BookingDtoForItemDto dto = new BookingDtoForItemDto();
-
-        when(bookingRepository.findFirstByItemIdAndStatusAndEndBeforeOrderByEndDesc(any(Long.class),
-                any(BookingStatus.class), any(LocalDateTime.class))).thenReturn(Optional.of(booking));
-        when(bookingRepository.findByItemIdAndStatusAndStartBeforeAndEndAfter(any(Long.class),
-                any(BookingStatus.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(Optional.of(booking));
-        when(bookingMapper.toBookingDtoForItemDto(booking)).thenReturn(dto);
-
-        BookingDtoForItemDto actualDto = bookingService.getLastBooking(itemId);
-
-        assertEquals(dto, actualDto);
-    }
-
-    @Test
-    void getLastBooking_whenLastBookingActionIsNotEmpty_thenReturnDto() {
-        Long itemId = 0L;
-        Booking booking = new Booking();
-        BookingDtoForItemDto dto = new BookingDtoForItemDto();
-
-        when(bookingRepository.findFirstByItemIdAndStatusAndEndBeforeOrderByEndDesc(any(Long.class),
-                any(BookingStatus.class), any(LocalDateTime.class))).thenReturn(Optional.of(booking));
-        when(bookingRepository.findByItemIdAndStatusAndStartBeforeAndEndAfter(any(Long.class),
-                any(BookingStatus.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(Optional.empty());
-        when(bookingMapper.toBookingDtoForItemDto(booking)).thenReturn(dto);
-
-        BookingDtoForItemDto actualDto = bookingService.getLastBooking(itemId);
-
-        assertEquals(dto, actualDto);
-    }
-
-    @Test
-    void getNextBooking() {
-        Long itemId = 0L;
-        Booking booking = new Booking();
-        BookingDtoForItemDto dto = new BookingDtoForItemDto();
-
-        when(bookingRepository.findFirstByItemIdAndStatusAndStartAfterOrderByStart(any(Long.class),
-                any(BookingStatus.class), any(LocalDateTime.class))).thenReturn(Optional.of(booking));
-        when(bookingMapper.toBookingDtoForItemDto(booking)).thenReturn(dto);
-
-        BookingDtoForItemDto actualDto = bookingService.getNextBooking(itemId);
-
-        assertEquals(dto, actualDto);
     }
 }

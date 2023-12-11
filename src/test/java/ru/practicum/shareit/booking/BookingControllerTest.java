@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,15 +12,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.model.BookingDto;
 import ru.practicum.shareit.booking.model.BookingDtoIn;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.booking.model.StateStatus;
-import ru.practicum.shareit.item.model.Comment;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -49,7 +52,7 @@ class BookingControllerTest {
         userId = 0L;
         itemId = 1L;
         bookingId = 2L;
-        start = LocalDateTime.of(2023, 12, 3, 19, 53,17);
+        start = LocalDateTime.of(2024, 12, 3, 19, 53,17);
         end = start.plusMinutes(1);
         bookingDtoIn = new BookingDtoIn(start, end, itemId);
         bookingDto = new BookingDto(bookingId, start, end, BookingStatus.APPROVED, null, null);
