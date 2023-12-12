@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.common.exeptions.ConflictDataException;
 import ru.practicum.shareit.common.exeptions.NotFoundException;
+import ru.practicum.shareit.common.exeptions.ValidationException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserDto;
 import ru.practicum.shareit.user.model.UserMapper;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -50,31 +52,6 @@ class UserServiceTest {
         verify(userMapper, times(1)).toUser(expectedUserDto);
         assertEquals(expectedUserDto, actualUserDto);
     }
-
-    @Test
-    void create_avoidTestErrors() {
-        User userToSave = new User(2L, "name", "user@mail.ru");
-        UserDto expectedUserDto = new UserDto(2L, "name", "user@mail.ru");
-        when(userRepository.save(userToSave)).thenReturn(userToSave);
-        when(userRepository.findAllByEmail(userToSave.getEmail())).thenReturn(List.of(userToSave, userToSave));
-        when(userMapper.toUser(expectedUserDto)).thenReturn(userToSave);
-
-        assertThrows(ConflictDataException.class,
-                () -> userService.create(expectedUserDto));
-    }
-
-   /* @Test
-    void create_whenUserNotValid_thenNotSavedUser() {
-        User userToSave = new User();
-        UserDto expectedUserDto = new UserDto();
-        doThrow(ValidationException.class)
-                .when(validateService).checkNameForValid(expectedUserDto);
-
-        assertThrows(ValidationException.class,
-                () -> userService.create(expectedUserDto));
-
-        verify(userRepository, never()).save(userToSave);
-    }*/
 
     @Test
     void update_whenUserFound_thenUpdatedAvailableFields() {

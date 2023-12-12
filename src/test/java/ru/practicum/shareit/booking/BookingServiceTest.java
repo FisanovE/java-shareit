@@ -82,7 +82,7 @@ class BookingServiceTest {
     }
 
     @Test
-    void create_whenBookerIdEqualOwnerId_thenNotSavedBooking() {
+    void create_whenBookerIdEqualOwnerId_thenReturnException() {
         Long ownerId = 0L;
         Long itemId = 1L;
         User owner = new User();
@@ -169,6 +169,82 @@ class BookingServiceTest {
     }
 
     @Test
+    void create_whenStartAfterEnd_thenReturnException() {
+        Long ownerId = 0L;
+        Long itemId = 1L;
+        User owner = new User();
+        owner.setId(ownerId);
+        User booker = new User();
+        booker.setId(ownerId);
+        Item item = new Item();
+        item.setAvailable(true);
+        item.setOwner(owner);
+        Booking booking = new Booking();
+        BookingDtoIn bookingDtoIn = new BookingDtoIn(LocalDateTime.now().plusMinutes(2L), LocalDateTime.now().plusMinutes(1L), itemId);
+
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(userRepository.findById(ownerId)).thenReturn(Optional.of(booker));
+
+        assertThrows(ValidationException.class,
+                () -> bookingService.create(ownerId, bookingDtoIn));
+
+        verify(bookingRepository, never()).save(booking);
+    }
+
+    @Test
+    void create_whenStartEqualsEnd_thenReturnException() {
+        LocalDateTime now = LocalDateTime.now().plusMinutes(2L);
+        Long ownerId = 0L;
+        Long itemId = 1L;
+        User owner = new User();
+        owner.setId(ownerId);
+        User booker = new User();
+        booker.setId(ownerId);
+        Item item = new Item();
+        item.setAvailable(true);
+        item.setOwner(owner);
+        Booking booking = new Booking();
+        BookingDtoIn bookingDtoIn = new BookingDtoIn(now, now, itemId);
+
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(userRepository.findById(ownerId)).thenReturn(Optional.of(booker));
+
+        assertThrows(ValidationException.class,
+                () -> bookingService.create(ownerId, bookingDtoIn));
+
+        verify(bookingRepository, never()).save(booking);
+    }
+
+    @Test
+    void create_whenBookingTimeIsRent_thenReturnException() {
+        LocalDateTime now = LocalDateTime.now().plusMinutes(2L);
+        Long ownerId = 0L;
+        Long bookerId = 2L;
+        Long itemId = 1L;
+        User owner = new User();
+        owner.setId(ownerId);
+        User booker = new User();
+        booker.setId(bookerId);
+        Item item = new Item();
+        item.setId(itemId);
+        item.setAvailable(true);
+        item.setOwner(owner);
+        Booking booking = new Booking();
+        BookingDtoIn bookingDtoIn = new BookingDtoIn(now.plusMinutes(1), now.plusMinutes(2), itemId);
+
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+        when(userRepository.findById(bookerId)).thenReturn(Optional.of(booker));
+        when(bookingMapper.toBooking(bookingDtoIn)).thenReturn(booking);
+        when(bookingRepository.findAllByItemIdAndStatusAndStartOrEnd(itemId,
+                bookingDtoIn.getStart(), bookingDtoIn.getEnd())).thenReturn(List.of(new Booking()));
+
+        assertThrows(ValidationException.class,
+                () -> bookingService.create(bookerId, bookingDtoIn));
+
+        verify(bookingRepository, never()).save(booking);
+    }
+
+    @Test
     void update_whenApprovedIsTrue_thenSavedBooking() {
         Long userId = 0L;
         Long bookingId = 1L;
@@ -207,6 +283,28 @@ class BookingServiceTest {
 
         assertThrows(NotFoundException.class,
                 () -> bookingService.update(userId, bookingId, approved));
+
+        verify(bookingRepository, never()).save(booking);
+    }
+
+    @Test
+    void update_whenIdNotEqualsOwnerId_thenReturnException() {
+        Long ownerId = 0L;
+        Long otherUserId = 2L;
+        Long bookingId = 1L;
+        User owner = new User();
+        owner.setId(ownerId);
+        Item item = new Item();
+        item.setOwner(owner);
+        Boolean approved = false;
+        Booking booking = new Booking();
+        booking.setItem(item);
+        booking.setStatus(BookingStatus.WAITING);
+
+        when(bookingRepository.findByBookingIdAndOwnerId(any(Long.class), any(Long.class))).thenReturn(Optional.of(booking));
+
+        assertThrows(NotFoundException.class,
+                () -> bookingService.update(otherUserId, bookingId, approved));
 
         verify(bookingRepository, never()).save(booking);
     }

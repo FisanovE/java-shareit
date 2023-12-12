@@ -13,6 +13,7 @@ import ru.practicum.shareit.user.model.UserDto;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -43,7 +44,7 @@ class UserControllerTest {
 
     @Test
     void create_whenUserValid_thenStatus200andUserSavedAndReturned() throws Exception {
-        when(userService.create(userDto)).thenReturn(userDto);
+        when(userService.create(any(UserDto.class))).thenReturn(userDto);
 
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -57,7 +58,7 @@ class UserControllerTest {
 
     @Test
     void update_whenExistsUser_thenStatus200andUserUpdateAndReturned() throws Exception {
-        when(userService.update(userId, userDto)).thenReturn(userDto);
+        when(userService.update(any(Long.class), any(UserDto.class))).thenReturn(userDto);
 
         mockMvc.perform(patch("/users/{id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)

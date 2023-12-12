@@ -5,17 +5,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper {
     public UserDto toUserDto(User user) {
-        return UserDto.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .email(user.getEmail())
-                .build();
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setName(user.getName());
+        userDto.setEmail(user.getEmail());
+        return userDto;
     }
 
     public UserDtoForBooking toUserDtoForBooking(User user) {
-        return UserDtoForBooking.builder()
-                .id(user.getId())
-                .build();
+        UserDtoForBooking userDtoForBooking = new UserDtoForBooking();
+        userDtoForBooking.setId(user.getId());
+        return userDtoForBooking;
     }
 
     public User toUser(UserDto userDTO) {

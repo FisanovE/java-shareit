@@ -25,14 +25,14 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public UserDto create(@Validated(ValidationMarkers.Strategy1.class) @RequestBody UserDto userDto) {
+    public UserDto create(@Validated(ValidationMarkers.Create.class) @RequestBody UserDto userDto) {
         log.info("Create user");
         return userService.create(userDto);
     }
 
     @PatchMapping("/{id}")
     public UserDto update(@PathVariable Long id,
-                          @Validated(ValidationMarkers.Strategy2.class) @RequestBody UserDto userDto) {
+                          @Validated(ValidationMarkers.Update.class) @RequestBody UserDto userDto) {
         log.info("Update user {}", id);
         return userService.update(id, userDto);
     }

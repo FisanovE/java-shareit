@@ -42,10 +42,6 @@ public class BookingService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found: " + userId));
         if (!item.getAvailable()) throw new ValidationException("Owner banned rent Item: " + bookingDtoIn.getItemId());
-        if (bookingDtoIn.getStart().isBefore(LocalDateTime.now()))
-            throw new ValidationException("Start time must not be in past");
-        if (bookingDtoIn.getEnd().isBefore(LocalDateTime.now()))
-            throw new ValidationException("End time must not be in past");
         if (bookingDtoIn.getEnd().isBefore(bookingDtoIn.getStart()))
             throw new ValidationException("End time must be after Start time");
         if (bookingDtoIn.getEnd().equals(bookingDtoIn.getStart()))

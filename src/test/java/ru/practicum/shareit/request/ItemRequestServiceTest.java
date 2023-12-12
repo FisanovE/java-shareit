@@ -50,8 +50,7 @@ class ItemRequestServiceTest {
         ItemRequest itemRequest = new ItemRequest();
         itemRequest.setDescription(description);
         ItemRequestDto itemRequestDto = new ItemRequestDto();
-        ItemRequestDtoIn itemRequestDtoIn = new ItemRequestDtoIn();
-        itemRequestDtoIn.setDescription(description);
+        ItemRequestDtoIn itemRequestDtoIn = new ItemRequestDtoIn(description);
 
         when(userRepository.existsById(userId)).thenReturn(true);
         when(itemRequestMapper.toItemRequest(itemRequestDtoIn)).thenReturn(itemRequest);

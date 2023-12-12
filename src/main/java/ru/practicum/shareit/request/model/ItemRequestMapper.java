@@ -17,9 +17,9 @@ public class ItemRequestMapper {
     }
 
     public ItemRequest toItemRequest(ItemRequestDtoIn itemRequestDtoIn) {
-        return ItemRequest.builder()
-                .description(itemRequestDtoIn.getDescription())
-                .created(LocalDateTime.now())
-                .build();
+        ItemRequest itemRequest = new ItemRequest();
+        itemRequest.setDescription(itemRequestDtoIn.getDescription());
+        itemRequest.setCreated(LocalDateTime.now());
+        return itemRequest;
     }
 }

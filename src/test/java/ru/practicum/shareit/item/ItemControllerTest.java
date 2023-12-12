@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.CommentDto;
 import ru.practicum.shareit.item.model.ItemDto;
+import ru.practicum.shareit.user.model.UserDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -53,7 +54,7 @@ class ItemControllerTest {
 
     @Test
     void create_whenItemValid_thenStatus200andItemSavedAndReturned() throws Exception {
-        when(itemService.create(userId, itemDto)).thenReturn(itemDto);
+        when(itemService.create(any(Long.class), any(ItemDto.class))).thenReturn(itemDto);
 
         mockMvc.perform(post("/items")
                         .header("X-Sharer-User-Id", userId)
@@ -69,7 +70,7 @@ class ItemControllerTest {
 
     @Test
     void update_whenItemValid_thenStatus200andItemSavedAndReturned() throws Exception {
-        when(itemService.update(userId, itemId, itemDto)).thenReturn(itemDto);
+        when(itemService.update(any(Long.class), any(Long.class), any(ItemDto.class))).thenReturn(itemDto);
 
         mockMvc.perform(patch("/items/{id}", itemId)
                         .header("X-Sharer-User-Id", userId)

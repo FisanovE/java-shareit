@@ -54,18 +54,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                                                      LocalDateTime startBefore,
                                                                      LocalDateTime endAfter);
 
-    Optional<Booking> findFirstByItemIdAndStatusAndStartAfterAndEndBefore(Long itemId, BookingStatus status,
-                                                                          LocalDateTime startAfter,
-                                                                          LocalDateTime endBefore);
-
-    Optional<Booking> findByItemIdAndStatusAndStartAndEnd(Long itemId, BookingStatus status,
-                                                          LocalDateTime startAfter,
-                                                          LocalDateTime endBefore);
-
     @Query("SELECT b " +
             "FROM Booking b " +
             "WHERE b.item.id = ?1 AND b.status = 'APPROVED' " +
-            "AND ((b.start >= ?2 AND b.start <= ?3) OR (b.end >= ?2 AND b.end <= ?3) OR (b.start > ?2 AND b.end < ?3)) ")
+            "AND (b.start <= ?3 AND b.end >= ?2)")
     List<Booking> findAllByItemIdAndStatusAndStartOrEnd(Long itemId, LocalDateTime startAfter,
                                                         LocalDateTime endBefore);
 }

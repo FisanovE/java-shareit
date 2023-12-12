@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -41,7 +43,6 @@ class ItemServiceTestIT {
     private final ItemMapper itemMapper;
     private final BookingService bookingService;
 
-
     private UserDto createUserDto(String name) {
         return new UserDto(null, name, name + "@mail.ru");
     }
@@ -65,6 +66,7 @@ class ItemServiceTestIT {
 
     @Test
     @Sql({"/schema.sql"})
+    @After("/drop-tables.sql")
     void shouldReturnAllItemsByUser() throws InterruptedException {
         int from = 0;
         int size = 1;

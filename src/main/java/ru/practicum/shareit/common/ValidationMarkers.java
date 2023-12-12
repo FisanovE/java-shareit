@@ -1,12 +1,12 @@
 package ru.practicum.shareit.common;
 
 public interface ValidationMarkers {
-    interface Strategy1 {
+    interface Create {
     }
 
     ;
 
-    interface Strategy2 {
+    interface Update {
     }
 
     ;

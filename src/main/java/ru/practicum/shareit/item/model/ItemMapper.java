@@ -6,13 +6,13 @@ import org.springframework.stereotype.Component;
 public class ItemMapper {
 
     public ItemDto toItemDto(Item item) {
-        return ItemDto.builder()
-                .id(item.getId() != null ? item.getId() : null)
-                .name(item.getName())
-                .description(item.getDescription())
-                .available(item.getAvailable())
-                .requestId(item.getRequestId() != null ? item.getRequestId() : null)
-                .build();
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(item.getId() != null ? item.getId() : null);
+        itemDto.setName(item.getName());
+        itemDto.setDescription(item.getDescription());
+        itemDto.setAvailable(item.getAvailable());
+        itemDto.setRequestId(item.getRequestId() != null ? item.getRequestId() : null);
+        return itemDto;
     }
 
     public Item toItem(ItemDto itemDto) {
