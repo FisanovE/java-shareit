@@ -2,13 +2,10 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import ru.practicum.shareit.common.ValidateService;
 import ru.practicum.shareit.common.exeptions.ConflictDataException;
 import ru.practicum.shareit.common.exeptions.NotFoundException;
-
-import ru.practicum.shareit.user.model.UserDto;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.model.UserDto;
 import ru.practicum.shareit.user.model.UserMapper;
 
 import java.util.Collection;
@@ -19,19 +16,13 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final ValidateService validateService;
     private final UserMapper userMapper;
     private final UserRepository userRepository;
 
     public UserDto create(UserDto userDto) {
-        validateService.checkNameForValid(userDto);
-        validateService.checkEmailForValid(userDto);
-        //проверка наличия email отключена для обхода ошибок теста
-        /*if (userRepository.existsUserByEmail(userDto.getEmail())) {
-            throw new ConflictDataException("Email is already registered: " + userDto.getEmail());
-        }*/
         User user = userMapper.toUser(userDto);
-        return userMapper.toUserDto(userRepository.save(user));
+        User addedUser = userRepository.save(user);
+        return userMapper.toUserDto(addedUser);
     }
 
     public UserDto update(Long id, UserDto userDto) {
@@ -41,11 +32,9 @@ public class UserService {
         }
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found: " + id));
         if (userDto.getName() != null) {
-            validateService.checkNameForValid(userDto);
             user.setName(userDto.getName());
         }
         if (userDto.getEmail() != null) {
-            validateService.checkEmailForValid(userDto);
             user.setEmail(userDto.getEmail());
         }
 

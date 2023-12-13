@@ -7,14 +7,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class BookingMapper {
     public BookingDto toBookingDto(Booking booking) {
-        return BookingDto.builder()
-                .id(booking.getId() != null ? booking.getId() : null)
-                .start(booking.getStart())
-                .end(booking.getEnd())
-                .status(booking.getStatus())
-                .booker(booking.getBooker())
-                .item(booking.getItem())
-                .build();
+        BookingDto bookingDto = new BookingDto();
+        bookingDto.setId(booking.getId() != null ? booking.getId() : null);
+        bookingDto.setStart(booking.getStart());
+        bookingDto.setEnd(booking.getEnd());
+        bookingDto.setStatus(booking.getStatus());
+        bookingDto.setBooker(booking.getBooker());
+        bookingDto.setItem(booking.getItem());
+        return bookingDto;
     }
 
     public Booking toBooking(BookingDtoIn bookingDtoIn) {
@@ -24,10 +24,10 @@ public class BookingMapper {
         return booking;
     }
 
-    public BookingDtoForItem toBookingDtoNew(Booking booking) {
-        BookingDtoForItem bookingDtoForItem = new BookingDtoForItem();
-        bookingDtoForItem.setId(booking.getId());
-        bookingDtoForItem.setBookerId(booking.getBooker().getId());
-        return bookingDtoForItem;
+    public BookingDtoForItemDto toBookingDtoForItemDto(Booking booking) {
+        BookingDtoForItemDto bookingDtoForItemDto = new BookingDtoForItemDto();
+        bookingDtoForItemDto.setId(booking.getId());
+        bookingDtoForItemDto.setBookerId(booking.getBooker().getId());
+        return bookingDtoForItemDto;
     }
 }
