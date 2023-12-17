@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 
 @Slf4j
 @RestControllerAdvice
@@ -20,7 +20,7 @@ public class ErrorHandler {
         log.error("400 {}", e.getMessage(), e);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         e.printStackTrace(new PrintStream(out));
-        String stackTrace = out.toString(StandardCharsets.UTF_8);
+        String stackTrace = out.toString(Charset.forName("UTF-8"));
         return new ErrorResponse(e.getMessage(), stackTrace);
     }
 
@@ -30,7 +30,7 @@ public class ErrorHandler {
         log.error("404 {}", e.getMessage(), e);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         e.printStackTrace(new PrintStream(out));
-        String stackTrace = out.toString(StandardCharsets.UTF_8);
+        String stackTrace = out.toString(Charset.forName("UTF-8"));
         return new ErrorResponse(e.getMessage(), stackTrace);
     }
 
@@ -40,7 +40,7 @@ public class ErrorHandler {
         log.error("409 {}", e.getMessage(), e);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         e.printStackTrace(new PrintStream(out));
-        String stackTrace = out.toString(StandardCharsets.UTF_8);
+        String stackTrace = out.toString(Charset.forName("UTF-8"));
         return new ErrorResponse(e.getMessage(), stackTrace);
     }
 
@@ -50,7 +50,7 @@ public class ErrorHandler {
         log.error("500 {}", e.getMessage(), e);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         e.printStackTrace(new PrintStream(out));
-        String stackTrace = out.toString(StandardCharsets.UTF_8);
+        String stackTrace = out.toString(Charset.forName("UTF-8"));
         return new ErrorResponse(e.getMessage(), stackTrace);
     }
 }
