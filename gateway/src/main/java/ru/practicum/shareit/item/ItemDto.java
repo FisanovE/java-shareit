@@ -17,10 +17,10 @@ import java.util.Collection;
 public class ItemDto {
     private Long id;
 
-    @NotBlank
+    @NotBlank(message = "Name is not be empty.")
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "Description is not be empty.")
     private String description;
 
     @NotNull
