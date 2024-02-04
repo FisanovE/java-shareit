@@ -2,7 +2,7 @@
 
 ### Описание проекта
 
----
+
 Разработка бэкенд-части для сервиса шеринга (сдачи в аренду) вещей.
 Приложение представляет собой многомодульный проект maven, который собран и упакован в docker-контейнеры и готов для размещения в любой среде.
 
@@ -12,7 +12,5 @@
 
 ### Стек используемых технологий
 
----
-Java 11, Spring Boot, Spring Data, Maven, Lombok, SLF4J, PostgreSQL, Docker, Git
 
-
+Java 11, Spring Boot, Spring Data, Hibernate ORM, Maven, Lombok, SLF4J, Mockito, JUnit, AssertJ, PostgreSQL, Docker, Git.
